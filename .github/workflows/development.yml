@@ -13,9 +13,9 @@ on:
       - "**/*.md"
 
 env:
-  REGISTRY_LOGIN_SERVER: ${{ vars.REGISTRY_LOGIN_SERVER }}
-  REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
-  REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+  ACR_LOGIN_SERVER: ${{ vars.ACR_LOGIN_SERVER }}
+  ACR_USERNAME: ${{ secrets.ACR_USERNAME }}
+  ACR_PASSWORD: ${{ secrets.ACR_PASSWORD }}
 
   APP_NAME: ${{ vars.APP_NAME}}
 
@@ -29,13 +29,13 @@ jobs:
         uses: actions/checkout@main
 
       - name: Azure Docker login
-        uses: azure/docker-login@v1
+        uses: azure/docker-login@v2
         with:
-          login-server: ${{ env.REGISTRY_LOGIN_SERVER }}
-          username: ${{ env.REGISTRY_USERNAME }}
-          password: ${{ env.REGISTRY_PASSWORD}}
+          login-server: ${{ env.ACR_LOGIN_SERVER }}
+          username: ${{ env.ACR_USERNAME }}
+          password: ${{ env.ACR_PASSWORD}}
 
       - name: Build and Push Docker Container
         run: |
-          docker build . -t ${{ env.REGISTRY_LOGIN_SERVER }}/${{ env.APP_NAME }}:latest
-          docker push ${{ env.REGISTRY_LOGIN_SERVER }}/${{ env.APP_NAME }}:latest
+          docker build . -t ${{ env.ACR_LOGIN_SERVER }}/${{ env.APP_NAME }}:latest
+          docker push ${{ env.ACR_LOGIN_SERVER }}/${{ env.APP_NAME }}:latest
