@@ -1,0 +1,41 @@
+name: Development
+
+permissions:
+  id-token: write
+  contents: read
+
+on:
+  push:
+    branches:
+      - master
+      - release/*
+    paths-ignore:
+      - "**/*.md"
+
+env:
+  REGISTRY_LOGIN_SERVER: ${{ vars.REGISTRY_LOGIN_SERVER }}
+  REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+  REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+
+  APP_NAME: ${{ vars.APP_NAME}}
+
+jobs:
+  build-and-deploy:
+    name: universal-backend
+    runs-on: ubuntu-latest  
+    environment: development
+    steps:
+      - name: Checkout GitHub Action
+        uses: actions/checkout@main
+
+      - name: Azure Docker login
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ env.REGISTRY_LOGIN_SERVER }}
+          username: ${{ env.REGISTRY_USERNAME }}
+          password: ${{ env.REGISTRY_PASSWORD}}
+
+      - name: Build and Push Docker Container
+        run: |
+          docker build . -t ${{ env.REGISTRY_LOGIN_SERVER }}/${{ env.APP_NAME }}:latest
+          docker push ${{ env.REGISTRY_LOGIN_SERVER }}/${{ env.APP_NAME }}:latest
